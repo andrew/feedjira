@@ -7,15 +7,12 @@ module Feedjira
         element :title
 
         element :"content:encoded", as: :content
-        element :"a10:content", as: :content
         element :description, as: :summary
 
         element :link, as: :url
-        element :"a10:link", as: :url, value: :href
 
         element :author
         element :"dc:creator", as: :author
-        element :"a10:name", as: :author
 
         element :pubDate, as: :published
         element :pubdate, as: :published
@@ -25,29 +22,27 @@ module Feedjira
         element :"dcterms:created", as: :published
 
         element :"dcterms:modified", as: :updated
-        element :"a10:updated", as: :updated
 
-        element :guid, as: :entry_id, class: Feedjira::Parser::GloballyUniqueIdentifier
+        element :guid, as: :entry_id
         element :"dc:identifier", as: :dc_identifier
 
-        element :"media:thumbnail", as: :image, value: :url
-        element :"media:content", as: :image, value: :url
-        element :enclosure, as: :image, value: :url
+        element :"media:thumbnail", value: :url, as: :media_thumbnail
+        element :"media:content", value: :url, as: :media_content
+
+        element :enclosure, value: :length, as: :enclosure_length
+        element :enclosure, value: :type, as: :enclosure_type
+        element :enclosure, value: :url, as: :enclosure_url
 
         elements :category, as: :categories
       end
     end
 
-    def entry_id
-      @entry_id && @entry_id.guid
-    end
+    attr_reader :url
 
-    def url
-      @url || (@entry_id && @entry_id.url)
-    end
-
+    # rubocop:disable Naming/MemoizedInstanceVariableName
     def id
-      entry_id || @dc_identifier || @url
+      @entry_id ||= @dc_identifier || @url
     end
+    # rubocop:enable Naming/MemoizedInstanceVariableName
   end
 end
